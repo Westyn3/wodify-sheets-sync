@@ -1,7 +1,5 @@
-# wodify_sync.py
-
-import requests
 import pygsheets
+import requests
 from datetime import datetime
 
 # === CONFIG ===
@@ -27,29 +25,17 @@ COACH_PAY = {
 gc = pygsheets.authorize(service_file='credentials.json')
 sheet = gc.open(SHEET_NAME)
 
-# === 2. LOAD EXISTING CLIENTS FROM COACH SHEETS ===
-existing_clients = {}  # {"full name": "Coach: ___"}
-
-for coach_sheet in COACH_SHEETS:
-    wks = sheet.worksheet_by_title(coach_sheet)
-    rows = wks.get_all_records()
-    print(f"🧪 Sheet: {coach_sheet} ➝ {len(rows)} rows")
-    for row in rows:
-        name = row.get("Client Name", "").strip()
-        if name:
-            existing_clients[name.lower()] = coach_sheet  # normalize name
-
-# === 3. LOAD SYNC QUEUE ===
+# === 2. LOAD SYNC QUEUE ===
 sync_wks = sheet.worksheet_by_title(SYNC_QUEUE_SHEET)
 sync_data = sync_wks.get_all_records()
 print(f"\n📥 Sync Queue entries: {len(sync_data)}")
 
-# === INIT SUMMARY COUNTERS ===
+# === SUMMARY COUNTERS ===
 added_count = 0
 removed_count = 0
 synced_count = 0
 
-# === 4. PROCESS EACH SYNC ENTRY ===
+# === 3. PROCESS EACH SYNC ENTRY ===
 for idx, row in enumerate(sync_data, start=2):  # start=2 to skip header
     print(f"\n🔎 Processing row {idx}: {row}")
 
@@ -63,25 +49,34 @@ for idx, row in enumerate(sync_data, start=2):  # start=2 to skip header
 
     full_name_normalized = full_name.lower()
     new_coach = new_tag
+
+    # 🔁 Rebuild existing_clients to reflect real-time updates
+    existing_clients = {}
+    for coach_sheet in COACH_SHEETS:
+        wks = sheet.worksheet_by_title(coach_sheet)
+        rows = wks.get_all_records()
+        for r in rows:
+            name = r.get("Client Name", "").strip()
+            if name:
+                existing_clients[name.lower()] = coach_sheet
+
     old_coach = existing_clients.get(full_name_normalized)
 
     if old_coach == new_coach:
         print(f"🔁 {full_name} is already in {new_coach}, but checking for duplicates in other sheets...")
 
-        # Remove from *other* coach sheets in case client appears elsewhere
         for coach in COACH_SHEETS:
             if coach == new_coach:
                 continue
             wks = sheet.worksheet_by_title(coach)
             values = wks.get_all_values()
-            for row_idx, row_vals in enumerate(values[1:], start=2):  # skip header
+            for row_idx, row_vals in enumerate(values[1:], start=2):
                 if row_vals[1].strip().lower() == full_name_normalized:
                     wks.delete_rows(row_idx)
                     removed_count += 1
                     print(f"🧹 Removed duplicate {full_name} from {coach}")
                     break
 
-        # ✅ Mark row as synced
         sync_wks.update_value(f"E{idx}", "✅")
         synced_count += 1
         print(f"📝 Marked row {idx} as synced for {full_name}")
@@ -94,7 +89,6 @@ for idx, row in enumerate(sync_data, start=2):  # start=2 to skip header
         print(f"⚠️ Warning: {new_coach} not found in COACH_PAY — using default $100.00")
         pay = "$100.00"
 
-    # 🧼 Format enforcement
     if not pay.startswith("$"):
         try:
             pay = f"${float(pay):.2f}"
@@ -102,34 +96,30 @@ for idx, row in enumerate(sync_data, start=2):  # start=2 to skip header
             pay = "$100.00"
             print(f"⚠️ Invalid pay format for {new_coach}, defaulting to $100.00")
 
-    # ✅ Add to new coach sheet (safe, with auto-expand)
+    # ✅ Add to new coach sheet
     new_row = [new_coach, full_name, pay]
     try:
         fresh_sheet = gc.open(SHEET_NAME)
         fresh_wks = fresh_sheet.worksheet_by_title(new_coach)
-
         existing_values = fresh_wks.get_all_values()
         real_rows = [r for r in existing_values if any(cell.strip() for cell in r)]
         next_empty_row = len(real_rows) + 1
 
-        # Expand sheet if needed
         if next_empty_row > fresh_wks.rows:
-            fresh_wks.rows = next_empty_row + 100  # buffer to prevent future issues
+            fresh_wks.rows = next_empty_row + 100
 
-        # Write the row
         fresh_wks.update_row(next_empty_row, new_row)
-
         added_count += 1
-        print(f"✅ Added {full_name} to {new_coach}")
+        print(f"✅ Added {full_name} to {new_coach} (Row {next_empty_row})")
     except Exception as e:
         print(f"❌ Failed to add {full_name} to {new_coach}: {e}")
         continue
 
-    # ❌ Remove from old coach sheet (in-place delete)
+    # ❌ Remove from old coach sheet
     if old_coach:
         old_wks = sheet.worksheet_by_title(old_coach)
         old_values = old_wks.get_all_values()
-        for row_idx, row_vals in enumerate(old_values[1:], start=2):  # skip header row
+        for row_idx, row_vals in enumerate(old_values[1:], start=2):
             if row_vals[1].strip().lower() == full_name_normalized:
                 old_wks.delete_rows(row_idx)
                 removed_count += 1
@@ -138,12 +128,12 @@ for idx, row in enumerate(sync_data, start=2):  # start=2 to skip header
         else:
             print(f"⚠️ Could not find {full_name} in {old_coach} to remove.")
 
-    # ✅ Mark row as synced in column E
+    # ✅ Mark row as synced
     sync_wks.update_value(f"E{idx}", "✅")
     synced_count += 1
     print(f"📝 Marked row {idx} as synced for {full_name}")
 
-# === 5. FINAL SUMMARY ===
+# === SUMMARY ===
 print("\n📊 Summary:")
 print(f"👥 Clients added to new coach: {added_count}")
 print(f"🧹 Duplicates removed from wrong coach sheets: {removed_count}")
