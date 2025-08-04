@@ -24,7 +24,7 @@ COACH_PAY = {
 }
 
 # === 1. AUTHENTICATE TO GOOGLE SHEETS ===
-gc = pygsheets.authorize()
+gc = pygsheets.authorize(service_file='credentials.json')
 sheet = gc.open(SHEET_NAME)
 
 # === 2. LOAD EXISTING CLIENTS FROM COACH SHEETS ===
