@@ -1,18 +1,17 @@
-- name: Run Wodify Sync
-  env:
-    GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}
-  run: |
-    echo "$GOOGLE_APPLICATION_CREDENTIALS_JSON" > credentials.json
-    export GOOGLE_APPLICATION_CREDENTIALS=credentials.json
-    python ../wodify_sync.py
+name: Wodify Sync
+
 on:
   schedule:
-    - cron: '*/15 * * * *'  # every 15 minutes
-  workflow_dispatch:        # allow manual trigger
+    - cron: '*/15 * * * *'  # Every 15 minutes
+  workflow_dispatch:        # Allow manual runs from GitHub UI
 
 jobs:
   sync:
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ${{ github.workspace }}  # Ensure we're in the repo root
 
     steps:
     - name: Checkout repo
@@ -24,8 +23,7 @@ jobs:
         python-version: '3.12'
 
     - name: Install dependencies
-      run: |
-        pip install -r requirements.txt
+      run: pip install -r requirements.txt
 
     - name: Run Wodify Sync
       env:
@@ -34,6 +32,3 @@ jobs:
         echo "$GOOGLE_APPLICATION_CREDENTIALS_JSON" > credentials.json
         export GOOGLE_APPLICATION_CREDENTIALS=credentials.json
         python wodify_sync.py
-
-
-
