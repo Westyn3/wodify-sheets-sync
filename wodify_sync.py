@@ -125,8 +125,10 @@ for idx, row in enumerate(sync_data, start=2):  # start=2 to skip header
     print(f"📝 Marked row {idx} as synced for {full_name}")
     synced_count += 1
 
-# === Summary
-print(f"""\n📊 Summary:
-👥 Clients added to new coach: {added_count}
-🧹 Duplicates removed from wrong coach sheets: {removed_count}
-📝 Sync Queue rows marked complete: {synced_count}
+print(
+    f"\n📊 Summary:\n"
+    f"👥 Clients added to new coach: {added_count}\n"
+    f"🧹 Duplicates removed from wrong coach sheets: {removed_count}\n"
+    f"📝 Sync Queue rows marked complete: {synced_count}\n\n"
+    )
+
