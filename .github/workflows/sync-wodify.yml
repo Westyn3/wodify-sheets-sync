@@ -1,4 +1,10 @@
-name: Wodify Sync
+- name: Run Wodify Sync
+  env:
+    GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}
+  run: |
+    echo "$GOOGLE_APPLICATION_CREDENTIALS_JSON" > credentials.json
+    export GOOGLE_APPLICATION_CREDENTIALS=credentials.json
+    python ../wodify_sync.py
 
 on:
   schedule:
