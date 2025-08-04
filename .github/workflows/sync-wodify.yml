@@ -2,8 +2,8 @@ name: Wodify Sync
 
 on:
   schedule:
-    - cron: '*/15 * * * *'  # Every 15 minutes
-  workflow_dispatch:        # Allow manual runs from GitHub UI
+    - cron: '0 * * * *'  # Every hour, at minute 0
+  workflow_dispatch:      # Allow manual runs from GitHub UI
 
 jobs:
   sync:
@@ -11,7 +11,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: ${{ github.workspace }}  # Ensure we're in the repo root
+        working-directory: ${{ github.workspace }}
 
     steps:
     - name: Checkout repo
