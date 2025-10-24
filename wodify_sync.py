@@ -10,7 +10,8 @@ COACH_SHEETS = [
     "Coach: Meghan Lindsay",
     "Coach: Beth Winiger",
     "Coach: Brittany Burris",
-    "Coach: Megan Argueta"
+    "Coach: Megan Argueta",
+    "Coach: Leah Davis",
 ]
 SYNC_QUEUE_SHEET = "Sync Queue"
 
@@ -19,7 +20,8 @@ COACH_PAY = {
     "Coach: Meghan Lindsay": "$100.00",
     "Coach: Beth Winiger": "$100.00",
     "Coach: Brittany Burris": "$100.00",
-    "Coach: Megan Argueta": "$100.00"
+    "Coach: Megan Argueta": "$100.00",
+    "Coach: Leah Davis: $100.00",
 }
 
 # === 1. AUTHENTICATE TO GOOGLE SHEETS ===
