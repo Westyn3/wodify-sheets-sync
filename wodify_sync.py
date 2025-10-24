@@ -21,7 +21,7 @@ COACH_PAY = {
     "Coach: Beth Winiger": "$100.00",
     "Coach: Brittany Burris": "$100.00",
     "Coach: Megan Argueta": "$100.00",
-    "Coach: Leah Davis: $100.00",
+    "Coach: Leah Davis": "$100.00",
 }
 
 # === 1. AUTHENTICATE TO GOOGLE SHEETS ===
