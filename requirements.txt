@@ -1,2 +1,3 @@
 pygsheets
 requests
+packaging
