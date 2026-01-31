@@ -16,12 +16,12 @@ COACH_SHEETS = [
 SYNC_QUEUE_SHEET = "Sync Queue"
 
 COACH_PAY = {
-    "Coach: Olivia Hill": "$200.00",
-    "Coach: Meghan Lindsay": "$100.00",
-    "Coach: Beth Winiger": "$100.00",
-    "Coach: Brittany Burris": "$100.00",
-    "Coach: Megan Argueta": "$100.00",
-    "Coach: Leah Davis": "$100.00",
+    "Coach: Olivia Hill": "$250.00",
+    "Coach: Meghan Lindsay": "$125.00",
+    "Coach: Beth Winiger": "$125.00",
+    "Coach: Brittany Burris": "$125.00",
+    "Coach: Megan Argueta": "$125.00",
+    "Coach: Leah Davis": "$125.00",
 }
 
 # === 1. AUTHENTICATE TO GOOGLE SHEETS ===
