@@ -26,7 +26,7 @@ COACH_PAY = {
     "Coach: Brittany Burris": "$125.00",
     "Coach: Megan Argueta": "$125.00",
     "Coach: Leah Davis": "$125.00",
-    "Coach: Amber Partin": "125.00",
+    "Coach: Amber Partin": "$125.00",
 }
 
 # === UTILS ===
